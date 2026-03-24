@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Rekenen bij Mara</title>
+<style>
+body { font-family: Arial; background-color: #f3e5f5; text-align: center; }
+h1 { color: purple; }
+.menu, .submenu { margin: 15px; }
+.menu button, .submenu button, #door { padding: 10px 20px; margin: 5px; font-size: 16px; border-radius: 10px; border: none; background-color: #ce93d8; color: white; }
+.menu button:hover, .submenu button:hover, #door:hover { background-color: #ba68c8; }
+.box { background: white; margin: 15px auto; padding: 20px; border-radius: 15px; width: 90%; display: none; }
+input { padding: 5px; font-size: 16px; margin-top:5px;}
+#antwoord { margin-top: 10px; font-weight: bold; white-space: pre-line; }
+</style>
+<script>
+// Sommen per categorie
+let minSommen = [{vraag:'76 - 67',antwoord:9},{vraag:'50 - 23',antwoord:27},{vraag:'34 - 12',antwoord:22}];
+let plusSommen = [{vraag:'23 + 17',antwoord:40},{vraag:'15 + 8',antwoord:23},{vraag:'12 + 14',antwoord:26}];
+let delenSommen = [{vraag:'12 ÷ 3',antwoord:4},{vraag:'20 ÷ 5',antwoord:4},{vraag:'30 ÷ 6',antwoord:5}];
+let breukenSommen = {
+    min:[{vraag:'3/4 - 1/2',antwoord:0.25},{vraag:'5/6 - 1/3',antwoord:0.5}],
+    plus:[{vraag:'1/3 + 1/6',antwoord:0.5},{vraag:'2/5 + 1/5',antwoord:0.6}],
+    delen:[{vraag:'1/2 ÷ 2',antwoord:0.25},{vraag:'3/4 ÷ 3',antwoord:0.25}]
+};
+
+// Huidige index
+let huidigeIndex = 0;
+let huidigType = '';
+let huidigSubType = '';
+
+function showBox(id){
+    const boxes = document.querySelectorAll('.box');
+    boxes.forEach(b=>b.style.display='none');
+    document.getElementById(id).style.display='block';
+    document.getElementById('antwoord').textContent='';
+}
+
+function startCategorie(type, subType=''){
+    huidigType = type;
+    huidigSubType = subType;
+    huidigeIndex = 0;
+    showBox('oefenBox');
+    nieuweSom();
+}
+
+function nieuweSom(){
+    const label = document.getElementById('somLabel');
+    const input = document.getElementById('somInput');
+    input.value='';
+    document.getElementById('antwoord').textContent='';
+    let som;
+    if(huidigType==='breuken') som = breukenSommen[huidigSubType][huidigeIndex];
+    else if(huidigType==='min') som = minSommen[huidigeIndex];
+    else if(huidigType==='plus') som = plusSommen[huidigeIndex];
+    else if(huidigType==='delen') som = delenSommen[huidigeIndex];
+    label.textContent = som.vraag;
+    input.dataset.antwoord = som.antwoord;
+}
+
+function checkAnswer(){
+    const input = document.getElementById('somInput');
+    const antwoord = parseFloat(input.dataset.antwoord);
+    const userInput = parseFloat(input.value);
+    const resultaat = document.getElementById('antwoord');
+    if(userInput === antwoord) resultaat.textContent = 'Goed gedaan! ✅';
+    else resultaat.textContent = 'Fout 😅, goed antwoord: '+antwoord;
+}
+function door(){
+    let sommen;
+    if(huidigType==='breuken') sommen = breukenSommen[huidigSubType];
+    else if(huidigType==='min') sommen = minSommen;
+    else if(huidigType==='plus') sommen = plusSommen;
+    else if(huidigType==='delen') sommen = delenSommen;
+    huidigeIndex = (huidigeIndex+1)%sommen.length;
+    nieuweSom();
+}
+</script>
+</head>
+<body>
+<h1>📚 Rekenen bij Mara 💜</h1>
+
+<div class="menu">
+    <button onclick="showBox('breukenMenu')">Breuken</button>
+    <button onclick="startCategorie('min')">Min</button>
+    <button onclick="startCategorie('plus')">Plus</button>
+    <button onclick="startCategorie('delen')">Delen</button>
+</div>
+
+<!-- Breuken keuze -->
+<div class="box" id="breukenMenu">
+    <h2>Breuken</h2>
+    <p>Kies wat je wilt oefenen:</p>
+    <div class="submenu">
+        <button onclick="startCategorie('breuken','min')">Min Breuken</button>
+        <button onclick="startCategorie('breuken','plus')">Plus Breuken</button>
+        <button onclick="startCategorie('breuken','delen')">Delen door Breuken</button>
+    </div>
+</div>
+
+<!-- Oefen box -->
+<div class="box" id="oefenBox">
+    <h2>Oefenen</h2>
+    <label id="somLabel"></label><br>
+    <input type="number" id="somInput"><br>
+    <button onclick="checkAnswer()">Check</button>
+    <button id="door" onclick="door()">Door</button>
+    <div id="antwoord"></div>
+</div>
+
+</body>
+</html>
